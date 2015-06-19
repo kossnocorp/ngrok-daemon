@@ -1,20 +1,28 @@
 var Tail = require('tail').Tail
 var spawn = require('child_process').spawn
+var temp = require('temp')
 
 module.exports = {
   start: function(port) {
     return new Promise(function(resolve, reject) {
-      var log = 'out.log'
-      var env = { NGROK_DAEMON_PORT: port, NGROK_DAEMON_LOG: log }
+      var log = temp.path({ prefix: 'ngrok-daemon-', suffix: '.log' })
 
-      spawn('sh', ['start.sh'], { env: env })
-        .stdout.on('data', function(data) {
-          var pid = parseInt(data)
+      spawn('touch', [log]).on('close', function() {
+        var env = { NGROK_DAEMON_PORT: port, NGROK_DAEMON_LOG: log }
+        var start = spawn('sh', ['start.sh'], { env: env })
 
-          getUrl(log).then(function(url) {
-            resolve({ url: url, pid: pid, log: log })
+        start.stdout.on('data', function(data) {
+            var pid = parseInt(data)
+
+            getUrl(log)
+              .then(function(url) {
+                resolve({ url: url, pid: pid, log: log })
+              })
+              .catch(reject)
           })
-        })
+
+        start.stderr.on('data', function(data) { reject(data.toString()) })
+      })
     })
   },
 
@@ -54,6 +62,8 @@ function getUrl(log) {
         resolve(captures[1])
       }
     })
+
+    tail.on('error', reject)
 
     tail.watch()
   })

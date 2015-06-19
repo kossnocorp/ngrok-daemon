@@ -18,6 +18,7 @@
   "dependencies": {
     "always-tail": "^0.1.1",
     "shelljs": "^0.5.1",
-    "tail": "^0.4.0"
+    "tail": "^0.4.0",
+    "temp": "^0.8.3"
   }
 }
