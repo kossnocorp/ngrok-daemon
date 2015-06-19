@@ -19,25 +19,21 @@ describe('ngrok-daemon', function() {
   })
 
   afterEach(function() {
-    shell.exec('killall ngrok')
+    shell.exec('killall ngrok', { silent: true })
   })
 
   describe('start', function() {
-    var start = ngrok.start
-
     it('starts ngrok and pass the URL', function() {
       return ngrok
         .start(SERVER_PORT)
         .then(function(tunnel) {
-          assert(typeof tunnel.url == 'string', 'URL is not a string')
+          assert(typeof tunnel.url == 'string')
           return tunnel
         })
         .then(function(tunnel) { return fetch(tunnel.url) })
         .then(function(res) { return res.text() })
-        .then(function(text) {
-          assert.equal(
-            text, 'Hello cruel world!', 'Got unexpected response text'
-          )
+        .then(function(responseText) {
+          assert(responseText == 'Hello cruel world!')
         })
     })
 
@@ -46,7 +42,7 @@ describe('ngrok-daemon', function() {
         .start(SERVER_PORT)
         .then(function(tunnel) {
           var pid = tunnel.pid
-          assert(typeof pid == 'number', 'PID is not a number')
+          assert(typeof pid == 'number')
           assert(
             shell.exec('ps -p ' + pid + ' | grep ' + pid, { silent: true }).output != '',
             'PID is invalid or ngrok is not started'
@@ -59,11 +55,37 @@ describe('ngrok-daemon', function() {
         .start(SERVER_PORT)
         .then(function(tunnel) {
           var log = tunnel.log
-          assert(typeof log == 'string', 'log is not a string')
+          assert(typeof log == 'string')
           assert(
             shell.exec('cat ' + log + ' | grep ' + tunnel.url, { silent: true }).output != '',
             'Log path is invalid'
           )
+        })
+    })
+  })
+
+  describe('stop', function() {
+    it('stops ngrok by passed PID', function() {
+      var pid
+      return ngrok
+        .start(SERVER_PORT)
+        .then(function(tunnel) {
+          pid = tunnel.pid
+          return ngrok.stop(pid)
+        })
+        .then(function() {
+          assert(
+            shell.exec('ps -p ' + pid + ' | grep ' + pid, { silent: true }).output == '',
+            'ngrok is still running'
+          )
+        })
+    })
+
+    it('passes the exit code', function() {
+      return ngrok.stop(123)
+        .then(function(code) {
+          assert(typeof code == 'number')
+          assert(code == 1)
         })
     })
   })
