@@ -49,7 +49,7 @@ ngrok.start(4000) // Port
 Starts ngrok on given port and returns `tunnel` object:
 
 ``` js
-ngrok.stop(tunnerl.pid)
+ngrok.stop(tunnel.pid)
 ```
 
 ### `isRunning`
