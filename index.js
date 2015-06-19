@@ -5,24 +5,23 @@ var temp = require('temp')
 module.exports = {
   start: function(port) {
     return new Promise(function(resolve, reject) {
-      var log = temp.path({ prefix: 'ngrok-daemon-', suffix: '.log' })
+      getTempFile()
+        .then(function(log) {
+          var env = { NGROK_DAEMON_PORT: port, NGROK_DAEMON_LOG: log }
+          var start = spawn('sh', ['start.sh'], { env: env })
 
-      spawn('touch', [log]).on('close', function() {
-        var env = { NGROK_DAEMON_PORT: port, NGROK_DAEMON_LOG: log }
-        var start = spawn('sh', ['start.sh'], { env: env })
+          start.stdout.on('data', function(data) {
+              var pid = parseInt(data)
 
-        start.stdout.on('data', function(data) {
-            var pid = parseInt(data)
+              getUrl(log)
+                .then(function(url) {
+                  resolve({ url: url, pid: pid, log: log })
+                })
+                .catch(reject)
+            })
 
-            getUrl(log)
-              .then(function(url) {
-                resolve({ url: url, pid: pid, log: log })
-              })
-              .catch(reject)
-          })
-
-        start.stderr.on('data', function(data) { reject(data.toString()) })
-      })
+          start.stderr.on('data', function(data) { reject(data.toString()) })
+        })
     })
   },
 
@@ -66,6 +65,13 @@ function getUrl(log) {
     tail.on('error', reject)
 
     tail.watch()
+  })
+}
+
+function getTempFile() {
+  return new Promise(function(resolve, reject) {
+    var log = temp.path({ prefix: 'ngrok-daemon-', suffix: '.log' })
+    spawn('touch', [log]).on('close', function() { resolve(log) })
   })
 }
 
