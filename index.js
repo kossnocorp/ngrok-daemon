@@ -22,6 +22,23 @@ module.exports = {
     return new Promise(function(resolve, reject) {
       spawn('kill', [pid]).on('close', resolve)
     })
+  },
+
+  isRunning: function(pid) {
+    return new Promise(function(resolve, reject) {
+      ps = spawn('ps', ['-p', pid])
+
+      ps.stderr.on('data', function(data) { reject(data.toString()) })
+
+      ps.stdout.on('data', function(data) {
+        var isRunning = data.toString().match(pid)
+        if (isRunning) {
+          resolve()
+        } else {
+          reject()
+        }
+      })
+    })
   }
 }
 

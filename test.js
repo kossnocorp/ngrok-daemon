@@ -89,5 +89,27 @@ describe('ngrok-daemon', function() {
         })
     })
   })
+
+  describe('isRunning', function() {
+    context('when it is NOT running', function() {
+      it('returns false', function(done) {
+        return ngrok.isRunning(9999999999999)
+          .then(assert.bind(null, false, 'Promise should not be resolved'))
+          .catch(function() { done() })
+      })
+    })
+
+    context('when it is running', function() {
+      it('returns true', function(done) {
+        return ngrok
+          .start(SERVER_PORT)
+          .then(function(tunnel) {
+            return ngrok.isRunning(tunnel.pid)
+              .then(done)
+              .catch(assert.bind(null, false, 'Promise must not be rejected'))
+          })
+      })
+    })
+  })
 })
 
