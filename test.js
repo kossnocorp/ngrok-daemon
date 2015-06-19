@@ -82,7 +82,7 @@ describe('ngrok-daemon', function() {
     })
 
     it('passes the exit code', function() {
-      return ngrok.stop(123)
+      return ngrok.stop(9999999999999)
         .then(function(code) {
           assert(typeof code == 'number')
           assert(code == 1)
