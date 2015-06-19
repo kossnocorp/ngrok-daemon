@@ -12,19 +12,28 @@ module.exports = {
 
       start.stdout.on('data', function(data) {
         var pid = parseInt(data)
-        var tail = new Tail(log, '\n', {}, true /* read from beginning */)
 
-        tail.on('line', function(line) {
-          var captures = line.match(/Tunnel established at (.+)/)
-          if (captures) {
-            tail.unwatch()
-            resolve({ url: captures[1], pid: pid, log: log })
-          }
+        getUrl(log).then(function(url) {
+          resolve({ url: url, pid: pid, log: log })
         })
-
-        tail.watch()
       })
     })
   }
+}
+
+function getUrl(log) {
+  return new Promise(function(resolve, reject) {
+    var tail = new Tail(log, '\n', {}, true /* read from beginning */)
+
+    tail.on('line', function(line) {
+      var captures = line.match(/Tunnel established at (.+)/)
+      if (captures) {
+        tail.unwatch()
+        resolve(captures[1])
+      }
+    })
+
+    tail.watch()
+  })
 }
 
