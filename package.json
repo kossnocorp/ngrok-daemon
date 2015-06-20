@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test.js --timeout 10000 --slow 5000 --require ./test_helper.js --watch"
+    "mocha": "mocha test.js --timeout 10000 --slow 5000 --require ./test_helper.js",
+    "test": "npm run mocha -- --watch"
   },
   "author": "Sasha <koss@nocorp.me>",
   "license": "MIT",
