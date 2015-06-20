@@ -44,6 +44,22 @@ ngrok.start(4000) // Port
   })
 ```
 
+It's possible to specify custom shell script that will start ngrok.
+Here is default one:
+
+``` shell
+ngrok -log=stdout $NGROK_DAEMON_PORT > $NGROK_DAEMON_LOG &
+echo $!
+```
+
+To provide custom shell script, pass source string as an option:
+
+``` js
+ngrok.start(4000, { shell: 'ngrok -log=stdout $NGROK_DAEMON_PORT > $NGROK_DAEMON_LOG &\necho $!' })
+```
+
+**Important**: shell script must echo PID, otherwise app will crash.
+
 ### `stop`
 
 Starts ngrok on given port and returns `tunnel` object:

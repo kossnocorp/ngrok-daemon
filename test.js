@@ -62,6 +62,16 @@ describe('ngrok-daemon', function() {
           )
         })
     })
+
+    it('allows to pass custom shell script', function() {
+      return ngrok
+        .start(9999, { shell: 'ngrok -log=stdout ' + SERVER_PORT + ' > $NGROK_DAEMON_LOG &\necho $!' })
+        .then(function(tunnel) { return fetch(tunnel.url) })
+        .then(function(res) { return res.text() })
+        .then(function(responseText) {
+          assert(responseText == 'Hello cruel world!')
+        })
+    })
   })
 
   describe('stop', function() {

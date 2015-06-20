@@ -1,14 +1,23 @@
 var Tail = require('tail').Tail
 var spawn = require('child_process').spawn
 var temp = require('temp')
+var path = require('path')
 
 module.exports = {
-  start: function(port) {
+  start: function(port, options) {
+    options = options || {}
+
     return new Promise(function(resolve, reject) {
       getTempFile()
         .then(function(log) {
           var env = { NGROK_DAEMON_PORT: port, NGROK_DAEMON_LOG: log }
-          var start = spawn('sh', ['start.sh'], { env: env })
+          var args
+          if (options['shell']) {
+            args = ['-c', options['shell']]
+          } else {
+            args = [path.join(__dirname, 'start.sh')]
+          }
+          var start = spawn('sh', args, { env: env })
 
           start.stdout.on('data', function(data) {
               var pid = parseInt(data)
