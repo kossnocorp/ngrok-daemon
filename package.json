@@ -14,11 +14,10 @@
     "express": "^4.12.4",
     "mocha": "^2.2.5",
     "node-fetch": "^1.3.0",
-    "power-assert": "^0.11.0"
+    "power-assert": "^0.11.0",
+    "shelljs": "^0.5.1"
   },
   "dependencies": {
-    "always-tail": "^0.1.1",
-    "shelljs": "^0.5.1",
     "tail": "^0.4.0",
     "temp": "^0.8.3"
   }
