@@ -55,8 +55,6 @@ To do it, pass source string as an option:
 ngrok.start('ngrok -log=stdout 4000')
 ```
 
-**Important**: shell script must echo PID, otherwise app will crash.
-
 ### `stop`
 
 Stop ngrok process using the PID:
