@@ -94,7 +94,7 @@ describe('ngrok-daemon', function() {
       return ngrok.stop(9999999999999)
         .then(function(code) {
           assert(typeof code == 'number')
-          assert(code == 1)
+          assert(code != 0)
         })
     })
 
