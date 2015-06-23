@@ -4,21 +4,22 @@ var temp = require('temp')
 var path = require('path')
 
 module.exports = {
-  start: function(port, options) {
+  start: function(portOrShell, options) {
+    var port
+    var shell
+    if (typeof portOrShell == 'number') {
+      port = portOrShell
+    } else {
+      shell = portOrShell
+    }
+
     options = options || {}
 
     return new Promise(function(resolve, reject) {
       getTempFile()
         .then(function(log) {
-          var env = { NGROK_DAEMON_PORT: port, NGROK_DAEMON_LOG: log }
-          var args
-          if (options.shell) {
-            args = ['-c', options.shell]
-          } else {
-            args = [path.join(__dirname, 'scripts', 'start.sh')]
-          }
-          var start = spawn('sh', args, {
-            env: env,
+          var shellString = (shell || 'ngrok -log=stdout ' + port) + ' > ' + log + ' &\necho $!'
+          var start = spawn('sh', ['-c', shellString], {
             cwd: options.cwd || process.cwd()
           })
 
@@ -37,19 +38,20 @@ module.exports = {
     })
   },
 
-  stop: function(pid, options) {
+  stop: function(pidOrShell, options) {
+    var pid
+    var shell
+    if (typeof pidOrShell == 'number') {
+      pid = pidOrShell
+    } else {
+      shell = pidOrShell
+    }
+
     options = options || {}
 
     return new Promise(function(resolve, reject) {
-      var env = { NGROK_PID: pid }
-      var args
-      if (options.shell) {
-        args = ['-c', options.shell]
-      } else {
-        args = [path.join(__dirname, 'scripts', 'stop.sh')]
-      }
-      var stop = spawn('sh', args, {
-        env: env,
+      var shellString = shell || 'kill ' + pid
+      var stop = spawn('sh', ['-c', shellString], {
         cwd: options.cwd || process.cwd()
       })
 
@@ -57,34 +59,26 @@ module.exports = {
     })
   },
 
-  isRunning: function(pid, options) {
+  isRunning: function(pidOrShell, options) {
+    var pid
+    var shell
+    if (typeof pidOrShell == 'number') {
+      pid = pidOrShell
+    } else {
+      shell = pidOrShell
+    }
+
     options = options || {}
 
     return new Promise(function(resolve, reject) {
-      var env = { NGROK_PID: pid }
-      var args
-      if (options.shell) {
-        args = ['-c', options.shell]
-      } else {
-        args = [path.join(__dirname, 'scripts', 'is_running.sh')]
-      }
-      var status = spawn('sh', args, {
-        env: env,
+      var shellString = shell || 'kill -0 ' + pid
+      var status = spawn('sh', ['-c', shellString], {
         cwd: options.cwd || process.cwd()
       })
 
-      status.stdout.on('data', function(data) {
-        var isRunning = data != ''
-        if (isRunning) {
-          resolve()
-        } else {
-          reject()
-        }
+      status.on('exit', function(status) {
+        status == 0 ? resolve() : reject()
       })
-
-      status.on('close', reject)
-
-      status.stderr.on('data', function(data) { reject(data.toString()) })
     })
   }
 }

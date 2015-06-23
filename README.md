@@ -49,17 +49,10 @@ background process, so if you need to stop it, call `process.exit` once
 you got a tunnel data.
 
 It's possible to specify custom shell script that will start ngrok.
-Here is default one:
-
-``` shell
-ngrok -log=stdout $NGROK_DAEMON_PORT > $NGROK_DAEMON_LOG &
-echo $!
-```
-
-To provide custom shell script, pass source string as an option:
+To do it, pass source string as an option:
 
 ``` js
-ngrok.start(4000, { shell: 'ngrok -log=stdout $NGROK_DAEMON_PORT > $NGROK_DAEMON_LOG &\necho $!' })
+ngrok.start('ngrok -log=stdout 4000')
 ```
 
 **Important**: shell script must echo PID, otherwise app will crash.
@@ -73,16 +66,10 @@ ngrok.stop(tunnel.pid)
 ```
 
 It's possible to specify custom shell script that will stop ngrok.
-Here is default one:
-
-``` shell
-kill $NGROK_PID
-```
-
-To provide custom shell script, pass source string as an option:
+To do it, pass source string as the first argument:
 
 ``` js
-ngrok.stop(4000, { shell: 'kill $NGROK_PID' })
+ngrok.stop('kill ' + 4000)
 ```
 
 ### `isRunning`
@@ -100,16 +87,10 @@ ngrok.isRunning(tunnel.pid)
 ```
 
 It's possible to specify custom shell script that will check if ngrok
-is running. Here is default one:
-
-``` shell
-ps $NGROK_PID | grep $NGROK_PID
-```
-
-To provide custom shell script, pass source string as an option:
+is running. To do it, pass source string as the first argument:
 
 ``` js
-ngrok.start(4000, { shell: 'ps $NGROK_PID | grep $NGROK_PID' })
+ngrok.isRunning('kill -0 ' + pid)
 ```
 
 **Important**: empty stdout will be treated as "not running" and vice versa.

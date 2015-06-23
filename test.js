@@ -65,7 +65,7 @@ describe('ngrok-daemon', function() {
 
     it('allows to pass custom shell script', function() {
       return ngrok
-        .start(9999, { shell: 'ngrok -log=stdout ' + SERVER_PORT + ' > $NGROK_DAEMON_LOG &\necho $!' })
+        .start('ngrok -log=stdout ' + SERVER_PORT)
         .then(function(tunnel) { return fetch(tunnel.url) })
         .then(function(res) { return res.text() })
         .then(function(responseText) {
@@ -103,7 +103,7 @@ describe('ngrok-daemon', function() {
         .start(SERVER_PORT)
         .then(function(tunnel) {
           return ngrok
-            .stop(9999999999999, { shell: 'kill ' + tunnel.pid })
+            .stop('kill ' + tunnel.pid)
             .then(function() {
               assert(
                 shell.exec('ps -p ' + tunnel.pid + ' | grep ' + tunnel.pid, { silent: true }).output == '',
@@ -143,10 +143,20 @@ describe('ngrok-daemon', function() {
       })
     })
 
-    it('allows to pass custom shell script', function(done) {
-      return ngrok.isRunning(9999999999999, { shell: 'echo ok' })
-        .then(done)
-        .catch(assert.bind(null, false, 'Promise must not be rejected'))
+    describe('custom shell script', function() {
+      context('when shell script puts something to stdout', function() {
+        it('resolves the promise', function(done) {
+          return ngrok.isRunning('echo ok')
+            .then(done)
+            .catch(assert.bind(null, false, 'Promise must not be rejected'))
+        })
+
+        it('rejects the promise', function(done) {
+          return ngrok.isRunning('')
+            .then(assert.bind(null, false, 'Promise must not be resolved'))
+            .catch(done)
+        })
+      })
     })
   })
 })
