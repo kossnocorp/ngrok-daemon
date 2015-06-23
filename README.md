@@ -39,7 +39,7 @@ ngrok.start(4000) // Port
     // - pid - process id of ngrok (PID)
     // - log - path to ngrok log is temporary directory
   })
-  .reject(function() {
+  .catch(function() {
     // Failed to start ngrok on given port (eg ngrok is not installed)
   })
 ```
