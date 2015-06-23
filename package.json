@@ -2,6 +2,7 @@
   "name": "ngrok-daemon",
   "version": "0.3.0",
   "description": "Very basic Node.js ngrok wrapper",
+  "repository": "kossnocorp/ngrok-daemon",
   "main": "index.js",
   "scripts": {
     "mocha": "mocha test.js --timeout 10000 --slow 5000 --require ./test_helper.js",
