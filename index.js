@@ -62,9 +62,9 @@ module.exports = {
       } else {
         args = [path.join(__dirname, 'scripts', 'is_running.sh')]
       }
-      var start = spawn('sh', args, { env: env })
+      var status = spawn('sh', args, { env: env })
 
-      start.stdout.on('data', function(data) {
+      status.stdout.on('data', function(data) {
         var isRunning = data != ''
         if (isRunning) {
           resolve()
@@ -73,7 +73,9 @@ module.exports = {
         }
       })
 
-      start.stderr.on('data', function(data) { reject(data.toString()) })
+      status.on('close', reject)
+
+      status.stderr.on('data', function(data) { reject(data.toString()) })
     })
   }
 }

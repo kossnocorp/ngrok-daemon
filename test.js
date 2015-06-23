@@ -115,9 +115,17 @@ describe('ngrok-daemon', function() {
   })
 
   describe('isRunning', function() {
-    context('when it is NOT running', function() {
+    context('when PID is wrong', function() {
       it('returns false', function(done) {
         return ngrok.isRunning(9999999999999)
+          .then(assert.bind(null, false, 'Promise should not be resolved'))
+          .catch(function() { done() })
+      })
+    })
+
+    context('when process is not running', function() {
+      it('returns false', function(done) {
+        return ngrok.isRunning(0)
           .then(assert.bind(null, false, 'Promise should not be resolved'))
           .catch(function() { done() })
       })
