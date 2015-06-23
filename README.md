@@ -67,7 +67,7 @@ It's possible to specify custom shell script that will stop ngrok.
 To do it, pass source string as the first argument:
 
 ``` js
-ngrok.stop('kill ' + 4000)
+ngrok.stop('kill ' + tunnel.pid)
 ```
 
 ### `isRunning`
@@ -88,7 +88,7 @@ It's possible to specify custom shell script that will check if ngrok
 is running. To do it, pass source string as the first argument:
 
 ``` js
-ngrok.isRunning('kill -0 ' + pid)
+ngrok.isRunning('kill -0 ' + tunnel.pid)
 ```
 
 **Important**: empty stdout will be treated as "not running" and vice versa.
