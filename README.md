@@ -68,6 +68,19 @@ Starts ngrok on given port and returns `tunnel` object:
 ngrok.stop(tunnel.pid)
 ```
 
+It's possible to specify custom shell script that will stop ngrok.
+Here is default one:
+
+``` shell
+kill $NGROK_PID
+```
+
+To provide custom shell script, pass source string as an option:
+
+``` js
+ngrok.stop(4000, { shell: 'kill $NGROK_PID' })
+```
+
 ### `isRunning`
 
 Resolves promise if it is running and rejects if isn't:
@@ -81,6 +94,21 @@ ngrok.isRunning(tunnel.pid)
     // Nope
   })
 ```
+
+It's possible to specify custom shell script that will check if ngrok
+is running. Here is default one:
+
+``` shell
+ps $NGROK_PID | grep $NGROK_PID
+```
+
+To provide custom shell script, pass source string as an option:
+
+``` js
+ngrok.start(4000, { shell: 'ps $NGROK_PID | grep $NGROK_PID' })
+```
+
+**Important**: empty stdout will be treated as "not running" and vice versa.
 
 ## Tests
 

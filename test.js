@@ -80,14 +80,13 @@ describe('ngrok-daemon', function() {
       return ngrok
         .start(SERVER_PORT)
         .then(function(tunnel) {
-          pid = tunnel.pid
           return ngrok.stop(pid)
-        })
-        .then(function() {
-          assert(
-            shell.exec('ps -p ' + pid + ' | grep ' + pid, { silent: true }).output == '',
-            'ngrok is still running'
-          )
+            .then(function() {
+              assert(
+                shell.exec('ps -p ' + tunnel.pid + ' | grep ' + pid, { silent: true }).output == '',
+                'ngrok is still running'
+              )
+            })
         })
     })
 
@@ -96,6 +95,21 @@ describe('ngrok-daemon', function() {
         .then(function(code) {
           assert(typeof code == 'number')
           assert(code == 1)
+        })
+    })
+
+    it('allows to pass custom shell script', function() {
+      return ngrok
+        .start(SERVER_PORT)
+        .then(function(tunnel) {
+          return ngrok
+            .stop(9999999999999, { shell: 'kill ' + tunnel.pid })
+            .then(function() {
+              assert(
+                shell.exec('ps -p ' + tunnel.pid + ' | grep ' + tunnel.pid, { silent: true }).output == '',
+                'ngrok is still running'
+              )
+            })
         })
     })
   })
@@ -119,6 +133,12 @@ describe('ngrok-daemon', function() {
               .catch(assert.bind(null, false, 'Promise must not be rejected'))
           })
       })
+    })
+
+    it('allows to pass custom shell script', function(done) {
+      return ngrok.isRunning(9999999999999, { shell: 'echo ok' })
+        .then(done)
+        .catch(assert.bind(null, false, 'Promise must not be rejected'))
     })
   })
 })

@@ -12,48 +12,68 @@ module.exports = {
         .then(function(log) {
           var env = { NGROK_DAEMON_PORT: port, NGROK_DAEMON_LOG: log }
           var args
-          if (options['shell']) {
-            args = ['-c', options['shell']]
+          if (options.shell) {
+            args = ['-c', options.shell]
           } else {
-            args = [path.join(__dirname, 'start.sh')]
+            args = [path.join(__dirname, 'scripts', 'start.sh')]
           }
           var start = spawn('sh', args, { env: env })
 
           start.stdout.on('data', function(data) {
-              var pid = parseInt(data)
+            var pid = parseInt(data)
 
-              getUrl(log)
-                .then(function(url) {
-                  resolve({ url: url, pid: pid, log: log })
-                })
-                .catch(reject)
-            })
+            getUrl(log)
+              .then(function(url) {
+                resolve({ url: url, pid: pid, log: log })
+              })
+              .catch(reject)
+          })
 
           start.stderr.on('data', function(data) { reject(data.toString()) })
         })
     })
   },
 
-  stop: function(pid) {
+  stop: function(pid, options) {
+    options = options || {}
+
     return new Promise(function(resolve, reject) {
-      spawn('kill', [pid]).on('close', resolve)
+      var env = { NGROK_PID: pid }
+      var args
+      if (options.shell) {
+        args = ['-c', options.shell]
+      } else {
+        args = [path.join(__dirname, 'scripts', 'stop.sh')]
+      }
+      var stop = spawn('sh', args, { env: env })
+
+      stop.on('close', resolve)
     })
   },
 
-  isRunning: function(pid) {
+  isRunning: function(pid, options) {
+    options = options || {}
+
     return new Promise(function(resolve, reject) {
-      ps = spawn('ps', ['-p', pid])
+      var env = { NGROK_PID: pid }
+      var args
+      if (options.shell) {
+        args = ['-c', options.shell]
+      } else {
+        args = [path.join(__dirname, 'scripts', 'is_running.sh')]
+      }
+      var start = spawn('sh', args, { env: env })
 
-      ps.stderr.on('data', function(data) { reject(data.toString()) })
-
-      ps.stdout.on('data', function(data) {
-        var isRunning = data.toString().match(pid)
+      start.stdout.on('data', function(data) {
+        var isRunning = data != ''
         if (isRunning) {
           resolve()
         } else {
           reject()
         }
       })
+
+      start.stderr.on('data', function(data) { reject(data.toString()) })
     })
   }
 }
