@@ -44,6 +44,10 @@ ngrok.start(4000) // Port
   })
 ```
 
+**Important**: Node.js process will not exit automatically after spawning
+background process, so if you need to stop it, call `process.exit` once
+you got tunnel data.
+
 It's possible to specify custom shell script that will start ngrok.
 Here is default one:
 
