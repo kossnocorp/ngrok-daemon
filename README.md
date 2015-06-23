@@ -23,11 +23,11 @@ so it [won't run on outdated Node.js](http://stackoverflow.com/questions/2156499
 ## API
 
 API is small and simple. Every function returns [`Promise`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise).
-When ngrok-daemon fails to perform some action, it returns.
+When ngrok-daemon fails to perform some action, it rejects the promise.
 
 ### `start`
 
-Starts ngrok on given port and returns `tunnel` object:
+Start ngrok on given port and get `tunnel` object:
 
 ``` js
 var ngrok = require('ngrok-daemon')
@@ -37,16 +37,16 @@ ngrok.start(4000) // Port
     // Tunnel has three propeties:
     // - url - URL to the started tunnel
     // - pid - process id of ngrok (PID)
-    // - log - path to ngrok log is temporary directory
+    // - log - path to ngrok log in temporary directory
   })
   .catch(function() {
     // Failed to start ngrok on given port (eg ngrok is not installed)
   })
 ```
 
-**Important**: Node.js process will not exit automatically after spawning
+**Important**: Node.js process won't exit automatically after spawning
 background process, so if you need to stop it, call `process.exit` once
-you got tunnel data.
+you got a tunnel data.
 
 It's possible to specify custom shell script that will start ngrok.
 Here is default one:
@@ -66,7 +66,7 @@ ngrok.start(4000, { shell: 'ngrok -log=stdout $NGROK_DAEMON_PORT > $NGROK_DAEMON
 
 ### `stop`
 
-Starts ngrok on given port and returns `tunnel` object:
+Stop ngrok process using the PID:
 
 ``` js
 ngrok.stop(tunnel.pid)
@@ -130,4 +130,8 @@ npm start
 
 **Warning**: `killall ngrok` will be invoked after each `it` statement,
 so don't be surprised when your own ngrok tunnel will be killed.
+
+## License
+
+ngrok-daemon is released under the [MIT License](./LICENSE.md).
 
