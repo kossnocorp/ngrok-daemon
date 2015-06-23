@@ -1,6 +1,6 @@
 {
   "name": "ngrok-daemon",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Very basic Node.js ngrok wrapper",
   "repository": "kossnocorp/ngrok-daemon",
   "main": "index.js",
