@@ -104,7 +104,7 @@ To run the tests you need:
 To start the tests in "watch" (autotests) mode:
 
 ```
-npm start
+npm test
 ```
 
 **Warning**: `killall ngrok` will be invoked after each `it` statement,
