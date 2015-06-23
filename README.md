@@ -1,4 +1,4 @@
-# ngrok-daemon
+# ngrok-daemon [![Build Status](https://travis-ci.org/kossnocorp/ngrok-daemon.svg?branch=master)](https://travis-ci.org/kossnocorp/ngrok-daemon) [![npm version](https://badge.fury.io/js/ngrok-daemon.svg)](http://badge.fury.io/js/ngrok-daemon)
 
 Very basic Node.js [ngrok](https://ngrok.com) wrapper. Unline [ngrok](https://www.npmjs.com/package/ngrok)
 npm package, ngrok-daemon do not use `child_process` so:
