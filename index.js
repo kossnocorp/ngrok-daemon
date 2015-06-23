@@ -17,7 +17,10 @@ module.exports = {
           } else {
             args = [path.join(__dirname, 'scripts', 'start.sh')]
           }
-          var start = spawn('sh', args, { env: env })
+          var start = spawn('sh', args, {
+            env: env,
+            cwd: options.cwd || process.cwd()
+          })
 
           start.stdout.on('data', function(data) {
             var pid = parseInt(data)
@@ -45,7 +48,10 @@ module.exports = {
       } else {
         args = [path.join(__dirname, 'scripts', 'stop.sh')]
       }
-      var stop = spawn('sh', args, { env: env })
+      var stop = spawn('sh', args, {
+        env: env,
+        cwd: options.cwd || process.cwd()
+      })
 
       stop.on('close', resolve)
     })
@@ -62,7 +68,10 @@ module.exports = {
       } else {
         args = [path.join(__dirname, 'scripts', 'is_running.sh')]
       }
-      var status = spawn('sh', args, { env: env })
+      var status = spawn('sh', args, {
+        env: env,
+        cwd: options.cwd || process.cwd()
+      })
 
       status.stdout.on('data', function(data) {
         var isRunning = data != ''
